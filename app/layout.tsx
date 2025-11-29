@@ -19,7 +19,10 @@ const lato = Lato({
 export const metadata: Metadata = {
   title: 'Gabriel & Milleny - Nosso Casamento',
   description: 'Convidamos você para celebrar o início de nossa jornada juntos. 22 de Agosto de 2026',
-  keywords: 'casamento, Gabriel, Milleny, 2026, Londrina',
+  keywords: 'casamento, Gabriel, Milleny, 2026, Curitiba',
+  icons: {
+    icon: '/icon.svg',
+  },
   openGraph: {
     title: 'Gabriel & Milleny - Nosso Casamento',
     description: 'Save the Date - 22 de Agosto de 2026',
