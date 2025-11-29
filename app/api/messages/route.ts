@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { z } from 'zod'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 // Schema de validação
 const messageSchema = z.object({
   name: z.string().min(2).max(100),
@@ -31,6 +29,9 @@ export async function POST(request: NextRequest) {
     if (data.website_url) {
       return NextResponse.json({ success: true }, { status: 200 })
     }
+
+    // Inicializa Resend apenas quando necessário
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
     // Envia email de notificação
     await resend.emails.send({
