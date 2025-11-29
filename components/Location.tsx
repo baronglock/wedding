@@ -12,12 +12,13 @@ export default function Location() {
   })
 
   const weddingDate = new Date(WEDDING_INFO.date)
-  const formattedDate = new Intl.DateTimeFormat('pt-BR', {
+  const rawDate = new Intl.DateTimeFormat('pt-BR', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   }).format(weddingDate)
+  const formattedDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1)
 
   return (
     <section className="section-padding">
