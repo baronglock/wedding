@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
 import { z } from 'zod'
 
-// Schema de validação simplificado
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+// Schema de validação
 const rsvpSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
   attending: z.enum(['yes', 'no']),
+  guests: z.number().optional(),
   message: z.string().optional(),
   website_url: z.string().optional() // Honeypot field
 })
@@ -30,15 +34,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true }, { status: 200 })
     }
 
-    // Aqui você pode salvar em um arquivo JSON local ou enviar email
-    // Por enquanto, apenas registra no console
-    console.log('RSVP recebido:', {
-      name: data.name,
-      email: data.email,
-      attending: data.attending === 'yes',
-      message: data.message,
-      timestamp: new Date().toISOString()
+    const attending = data.attending === 'yes'
+    const guestsText = data.guests && data.guests > 0 ? `\nAcompanhantes: ${data.guests}` : ''
+
+    // Envia email de notificação
+    await resend.emails.send({
+      from: 'Casamento G&M <onboarding@resend.dev>',
+      to: 'gabriglock2@outlook.com',
+      subject: `${attending ? '✅' : '❌'} RSVP: ${data.name} ${attending ? 'confirmou presença!' : 'não poderá ir'}`,
+      html: `
+        <div style="font-family: Georgia, serif; max-width: 500px; margin: 0 auto; padding: 20px;">
+          <h2 style="color: #4A0E1A; border-bottom: 2px solid #C9A961; padding-bottom: 10px;">
+            ${attending ? '🎉 Nova Confirmação de Presença!' : '😢 Ausência Confirmada'}
+          </h2>
+
+          <div style="background: #FBF7F0; padding: 20px; border-left: 4px solid #C9A961; margin: 20px 0;">
+            <p><strong>Nome:</strong> ${data.name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Vai comparecer:</strong> ${attending ? '✅ Sim' : '❌ Não'}</p>
+            ${guestsText ? `<p><strong>Acompanhantes:</strong> ${data.guests}</p>` : ''}
+            ${data.message ? `<p><strong>Mensagem:</strong> "${data.message}"</p>` : ''}
+          </div>
+
+          <p style="color: #7A8B7F; font-size: 12px;">
+            Enviado em ${new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' })}
+          </p>
+        </div>
+      `
     })
+
+    console.log('RSVP recebido e email enviado:', data.name)
 
     return NextResponse.json({
       success: true,
