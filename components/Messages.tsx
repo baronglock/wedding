@@ -217,10 +217,10 @@ export default function Messages() {
           {/* Nota elegante */}
           <div className="text-center mt-12 pt-8 border-t border-wedding-gold/20">
             <p className="text-wedding-moss/80 italic">
-              "O amor é paciente, o amor é bondoso"
+              "Maridos, amai vossas mulheres, como também Cristo amou a igreja."
             </p>
             <p className="text-wedding-moss/60 text-sm mt-1">
-              1 Coríntios 13:4
+              Efésios 5:25
             </p>
           </div>
         </div>
