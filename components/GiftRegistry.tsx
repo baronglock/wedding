@@ -69,10 +69,35 @@ export default function GiftRegistry() {
     setCurrentPage(1)
   }, [searchTerm, priceFilter])
 
+  // Rastreio silencioso - envia email se usuário confirmou presença
+  const trackGiftView = async (gift: GiftItem) => {
+    try {
+      const guestData = localStorage.getItem('wedding_guest')
+      if (guestData) {
+        const guest = JSON.parse(guestData)
+        fetch('/api/gift-track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            guestName: guest.name,
+            guestEmail: guest.email,
+            giftName: gift.title,
+            giftPrice: formatCurrency(gift.price)
+          })
+        }).catch(() => {}) // Silencioso - ignora erros
+      }
+    } catch {
+      // Silencioso
+    }
+  }
+
   // Clicar no presente gera QR Code diretamente
   const handleGiftClick = async (gift: GiftItem) => {
     setLoadingQR(true)
     setCopied(false)
+
+    // Rastreio silencioso
+    trackGiftView(gift)
 
     const payload = generatePixPayload({
       key: WEDDING_INFO.pixKey,

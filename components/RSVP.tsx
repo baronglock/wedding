@@ -66,12 +66,12 @@ export default function RSVP() {
         throw new Error('Erro na requisição')
       }
 
-      console.log('RSVP Confirmado:', {
+      // Salva dados do usuário no localStorage para rastreio
+      localStorage.setItem('wedding_guest', JSON.stringify({
         name: formData.name,
-        email: formData.email,
-        attending: formData.attending,
-        message: formData.message
-      })
+        email: formData.email
+      }))
+
       setSubmitted(true)
     } catch (err) {
       setError('Erro ao enviar confirmação. Tente novamente.')
