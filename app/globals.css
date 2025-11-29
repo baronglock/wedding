@@ -1,0 +1,292 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fontes Elegantes e Profissionais */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-wedding-cream text-wedding-brown;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+
+  /* Scrollbar profissional */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-wedding-cream;
+    border-left: 1px solid rgba(122, 139, 127, 0.1);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-wedding-moss;
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-wedding-moss-dark;
+  }
+
+  /* Seleção de texto */
+  ::selection {
+    @apply bg-wedding-burgundy text-wedding-cream;
+  }
+}
+
+@layer components {
+  .container-wedding {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Botões Profissionais */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-8 py-4;
+    @apply bg-wedding-burgundy text-wedding-cream;
+    @apply font-medium tracking-wide uppercase text-sm;
+    @apply transition-all duration-300;
+    @apply hover:bg-wedding-burgundy-light hover:shadow-xl;
+    letter-spacing: 0.1em;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-8 py-4;
+    @apply bg-transparent text-wedding-moss;
+    @apply border-2 border-wedding-moss;
+    @apply font-medium tracking-wide uppercase text-sm;
+    @apply transition-all duration-300;
+    @apply hover:bg-wedding-moss hover:text-wedding-cream hover:shadow-xl;
+    letter-spacing: 0.1em;
+  }
+
+  /* Cards Elegantes */
+  .card-elegant {
+    @apply bg-white shadow-lg;
+    @apply border-t-4 border-wedding-gold;
+  }
+
+  /* Input fields profissionais */
+  .input-field {
+    @apply w-full px-4 py-3 bg-white;
+    @apply border border-wedding-moss/20;
+    @apply focus:outline-none focus:border-wedding-moss focus:ring-2 focus:ring-wedding-moss/20;
+    @apply transition-all duration-200;
+    @apply text-wedding-brown;
+  }
+
+  /* Títulos Elegantes */
+  .heading-primary {
+    @apply font-serif text-wedding-gold;
+    font-family: 'Playfair Display', serif;
+    @apply font-bold;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .heading-secondary {
+    @apply font-serif text-wedding-cream;
+    font-family: 'Cormorant Garamond', serif;
+    @apply font-medium;
+  }
+
+  /* Texto estilo escrita refinada para nomes */
+  .text-script {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 600;
+    @apply text-wedding-burgundy;
+    letter-spacing: 0.02em;
+  }
+
+  /* Divisor elegante */
+  .divider-elegant {
+    @apply relative h-px bg-wedding-gold/30 my-12;
+  }
+
+  .divider-elegant::before {
+    content: '';
+    @apply absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2;
+    @apply w-2 h-2 bg-wedding-gold rotate-45;
+  }
+
+  /* Menu Profissional */
+  .nav-professional {
+    @apply bg-white shadow-md;
+    @apply border-b border-wedding-gold/20;
+  }
+
+  /* Seções */
+  .section-padding {
+    @apply py-20 md:py-32;
+  }
+
+  /* Texto Profissional */
+  .text-professional {
+    @apply text-wedding-brown leading-relaxed;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.7;
+  }
+
+  /* Badge elegante */
+  .badge-elegant {
+    @apply inline-flex items-center px-4 py-2;
+    @apply bg-wedding-moss/10 text-wedding-moss;
+    @apply font-medium text-sm uppercase tracking-wider;
+  }
+}
+
+@layer utilities {
+  /* Sombras profissionais */
+  .shadow-elegant {
+    box-shadow: 0 10px 40px rgba(122, 139, 127, 0.1);
+  }
+
+  .shadow-elegant-hover {
+    box-shadow: 0 20px 60px rgba(122, 139, 127, 0.15);
+  }
+
+  /* Bordas elegantes */
+  .border-elegant {
+    border: 1px solid rgba(201, 169, 97, 0.3);
+  }
+
+  /* Animações suaves */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  /* Efeito hover profissional */
+  .hover-lift {
+    @apply transition-transform duration-300;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Efeitos hover elegantes para elementos interativos */
+  .hover-glow {
+    @apply transition-all duration-500 ease-out;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 30px rgba(201, 169, 97, 0.3), 0 10px 40px rgba(122, 139, 127, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .hover-scale {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  /* Animação de brilho sutil */
+  @keyframes subtleShine {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .hover-shine {
+    @apply relative overflow-hidden;
+  }
+
+  .hover-shine::after {
+    content: '';
+    @apply absolute inset-0 opacity-0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    background-size: 200% 100%;
+    transition: opacity 0.3s ease;
+  }
+
+  .hover-shine:hover::after {
+    @apply opacity-100;
+    animation: subtleShine 1.5s ease-in-out;
+  }
+
+  /* Animação de flutuação para as velas */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Gradiente radial para as chamas */
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+
+  /* Fade in up animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  /* Pulsação suave */
+  @keyframes gentlePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+  }
+
+  .hover-pulse:hover {
+    animation: gentlePulse 2s ease-in-out infinite;
+  }
+
+  /* Efeito de linha elegante em hover */
+  .hover-underline {
+    @apply relative;
+  }
+
+  .hover-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-1/2 w-0 h-px bg-wedding-gold;
+    @apply transition-all duration-300 ease-out;
+    transform: translateX(-50%);
+  }
+
+  .hover-underline:hover::after {
+    @apply w-full;
+  }
+}

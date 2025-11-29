@@ -1,0 +1,403 @@
+import React, { useState, useEffect } from 'react';
+import { Heart, MapPin, Gift, Calendar, Copy, Check, Menu, X, MessageSquare } from 'lucide-react';
+
+// --- CONSTANTS & DESIGN SYSTEM ---
+const THEME = {
+  colors: {
+    bg: '#F5F1E6',      // Off-white warm
+    card: '#EBE5CE',    // Medium beige
+    primary: '#5D4037', // Deep coffee brown
+    accent: '#A67B5B',  // Terracotta
+    muted: '#8C7C71',   // Taupe
+  },
+  fonts: {
+    serif: '"Playfair Display", serif',
+    sans: '"Lato", sans-serif',
+  }
+};
+
+// --- PIX ENGINEERING (Based on PDF Section 3) ---
+
+// CRC-16/CCITT-FALSE Implementation (Polynomial 0x1021)
+const calculateCRC16 = (payload) => {
+  const polynomial = 0x1021;
+  let crc = 0xFFFF;
+
+  for (let i = 0; i < payload.length; i++) {
+    let c = payload.charCodeAt(i);
+    crc ^= (c << 8);
+    for (let j = 0; j < 8; j++) {
+      if ((crc & 0x8000) !== 0) {
+        crc = (crc << 1) ^ polynomial;
+      } else {
+        crc = crc << 1;
+      }
+    }
+  }
+  return (crc & 0xFFFF).toString(16).toUpperCase().padStart(4, '0');
+};
+
+const formatField = (id, value) => {
+  const len = value.length.toString().padStart(2, '0');
+  return `${id}${len}${value}`;
+};
+
+const generatePixPayload = ({ key, name, city, amount, txid = '***' }) => {
+  // Normalize strings (remove accents as per PDF)
+  const normName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 25);
+  const normCity = city.normalize("NFD").replace(/[\u0300-\u036f]/g, "").substring(0, 15);
+  const amountStr = amount.toFixed(2);
+
+  // Field 26: Merchant Account Info
+  const gui = formatField('00', 'br.gov.bcb.pix');
+  const keyField = formatField('01', key);
+  const merchantAccount = formatField('26', gui + keyField);
+
+  // Build Payload
+  let payload = [
+    formatField('00', '01'),          // Payload Format
+    formatField('01', '12'),          // Point of Initiation (12 = Dynamic/Event)
+    merchantAccount,                  // Merchant Info
+    formatField('52', '0000'),        // Category Code
+    formatField('53', '986'),         // Currency (BRL)
+    formatField('54', amountStr),     // Amount
+    formatField('58', 'BR'),          // Country
+    formatField('59', normName),      // Merchant Name
+    formatField('60', normCity),      // Merchant City
+    formatField('62', formatField('05', txid)), // Additional Data
+    '6304'                            // CRC placeholder
+  ].join('');
+
+  const crc = calculateCRC16(payload);
+  return payload + crc;
+};
+
+// --- COMPONENTS ---
+
+const GrainyOverlay = () => (
+  <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.03] mix-blend-overlay" 
+    style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+  />
+);
+
+const Navigation = ({ activeTab, setActiveTab }) => {
+  const navItems = [
+    { id: 'home', label: 'Início', icon: Heart },
+    { id: 'rsvp', label: 'RSVP', icon: Check },
+    { id: 'gifts', label: 'Presentes', icon: Gift },
+    { id: 'location', label: 'Local', icon: MapPin },
+  ];
+
+  return (
+    <nav className="fixed bottom-0 left-0 w-full bg-[#F5F1E6]/95 backdrop-blur-md border-t border-[#8C7C71]/20 z-40 md:top-0 md:bottom-auto md:border-b md:border-t-0 md:py-4">
+      <div className="max-w-5xl mx-auto px-6 flex justify-around md:justify-center md:gap-12">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => setActiveTab(item.id)}
+            className={`flex flex-col items-center p-3 md:flex-row md:gap-2 transition-colors ${
+              activeTab === item.id ? 'text-[#5D4037]' : 'text-[#8C7C71]'
+            }`}
+          >
+            <item.icon size={20} strokeWidth={1.5} />
+            <span className="text-xs md:text-sm uppercase tracking-widest mt-1 md:mt-0 font-sans">{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </nav>
+  );
+};
+
+const Hero = () => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
+
+  useEffect(() => {
+    const weddingDate = new Date('2026-08-22T14:30:00');
+    const timer = setInterval(() => {
+      const now = new Date();
+      const difference = weddingDate - now;
+      
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+        });
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center text-center px-4 pt-10 pb-24 md:pt-24">
+      <div className="mb-6 animate-fade-in">
+        <span className="font-sans text-[#A67B5B] tracking-[0.2em] uppercase text-sm">Save the Date</span>
+      </div>
+      <h1 className="font-serif text-6xl md:text-8xl text-[#5D4037] mb-4 leading-tight">
+        Gabriel <span className="text-[#A67B5B] text-4xl md:text-6xl align-middle italic">&</span> Milleny
+      </h1>
+      <p className="font-sans text-[#8C7C71] text-lg md:text-xl mb-12 max-w-md leading-relaxed">
+        Convidamos você para celebrar o início de nossa jornada juntos.
+      </p>
+      
+      <div className="grid grid-cols-3 gap-8 text-[#5D4037] border-t border-b border-[#5D4037]/10 py-8 w-full max-w-lg">
+        {[
+          { val: timeLeft.days, label: 'Dias' },
+          { val: timeLeft.hours, label: 'Horas' },
+          { val: timeLeft.minutes, label: 'Min' }
+        ].map((item, idx) => (
+          <div key={idx} className="flex flex-col">
+            <span className="font-serif text-3xl md:text-4xl">{item.val}</span>
+            <span className="font-sans text-xs uppercase tracking-widest text-[#A67B5B]">{item.label}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-8 font-serif italic text-[#5D4037]">22 de Agosto de 2026 • 14:30</p>
+    </section>
+  );
+};
+
+const RSVP = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', guests: 0, attending: 'yes' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Simulation of Supabase interaction
+    setTimeout(() => setSubmitted(true), 1000);
+  };
+
+  if (submitted) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+        <div className="w-16 h-16 rounded-full bg-[#EBE5CE] flex items-center justify-center mb-4 text-[#5D4037]">
+          <Check size={32} />
+        </div>
+        <h2 className="font-serif text-3xl text-[#5D4037] mb-2">Confirmado!</h2>
+        <p className="text-[#8C7C71]">Sua presença é muito importante para nós.</p>
+      </div>
+    );
+  }
+
+  return (
+    <section className="max-w-xl mx-auto px-6 py-12 mb-20">
+      <h2 className="font-serif text-4xl text-[#5D4037] text-center mb-8">Confirmação de Presença</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-xs uppercase tracking-widest text-[#8C7C71] mb-2">Nome Completo</label>
+          <input 
+            required
+            type="text" 
+            className="w-full bg-[#fff] border border-[#EBE5CE] p-4 text-[#5D4037] focus:outline-none focus:border-[#A67B5B] transition-colors"
+            placeholder="Ex: João da Silva"
+            value={formData.name}
+            onChange={e => setFormData({...formData, name: e.target.value})}
+          />
+        </div>
+        <div>
+          <label className="block text-xs uppercase tracking-widest text-[#8C7C71] mb-2">Email</label>
+          <input 
+            required
+            type="email" 
+            className="w-full bg-[#fff] border border-[#EBE5CE] p-4 text-[#5D4037] focus:outline-none focus:border-[#A67B5B] transition-colors"
+            placeholder="Ex: joao@email.com"
+            value={formData.email}
+            onChange={e => setFormData({...formData, email: e.target.value})}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <label className={`cursor-pointer border p-4 text-center transition-all ${formData.attending === 'yes' ? 'bg-[#5D4037] text-[#F5F1E6] border-[#5D4037]' : 'border-[#EBE5CE] text-[#8C7C71]'}`}>
+            <input type="radio" name="attending" value="yes" className="hidden" onChange={() => setFormData({...formData, attending: 'yes'})} />
+            <span className="block font-serif text-lg">Estarei lá</span>
+          </label>
+          <label className={`cursor-pointer border p-4 text-center transition-all ${formData.attending === 'no' ? 'bg-[#5D4037] text-[#F5F1E6] border-[#5D4037]' : 'border-[#EBE5CE] text-[#8C7C71]'}`}>
+            <input type="radio" name="attending" value="no" className="hidden" onChange={() => setFormData({...formData, attending: 'no'})} />
+            <span className="block font-serif text-lg">Não poderei</span>
+          </label>
+        </div>
+        
+        {formData.attending === 'yes' && (
+          <div>
+             <label className="block text-xs uppercase tracking-widest text-[#8C7C71] mb-2">Acompanhantes (além de você)</label>
+             <select 
+              className="w-full bg-[#fff] border border-[#EBE5CE] p-4 text-[#5D4037]"
+              onChange={e => setFormData({...formData, guests: parseInt(e.target.value)})}
+             >
+               {[0,1,2,3,4].map(n => <option key={n} value={n}>{n}</option>)}
+             </select>
+          </div>
+        )}
+
+        <button type="submit" className="w-full bg-[#A67B5B] text-white py-4 font-serif text-lg tracking-wide hover:bg-[#8f684b] transition-colors mt-4">
+          Enviar Confirmação
+        </button>
+      </form>
+    </section>
+  );
+};
+
+const GiftRegistry = () => {
+  const [selectedGift, setSelectedGift] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  // Mock gifts data
+  const gifts = [
+    { id: 1, title: "Jantar Romântico", price: 150.00, icon: "🍷" },
+    { id: 2, title: "Cotas Lua de Mel", price: 200.00, icon: "✈️" },
+    { id: 3, title: "Diária Hotel", price: 350.00, icon: "🏨" },
+    { id: 4, title: "Passeio de Barco", price: 100.00, icon: "⛵" },
+  ];
+
+  const handleGiftClick = (gift) => {
+    const payload = generatePixPayload({
+      key: 'noivos@email.com', // Defined in PDF 3.2
+      name: 'Gabriel e Milleny',
+      city: 'Londrina',
+      amount: gift.price,
+      txid: `GIFT${gift.id}`
+    });
+    setSelectedGift({ ...gift, payload });
+    setCopied(false);
+  };
+
+  const copyToClipboard = () => {
+    // Using deprecated execCommand for iframe compatibility in this preview environment
+    // In production, use navigator.clipboard.writeText(selectedGift.payload)
+    const textArea = document.createElement("textarea");
+    textArea.value = selectedGift.payload;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+  };
+
+  return (
+    <section className="max-w-4xl mx-auto px-6 py-12 mb-24">
+      <div className="text-center mb-12">
+        <h2 className="font-serif text-4xl text-[#5D4037] mb-4">Lista de Presentes</h2>
+        <p className="text-[#8C7C71] max-w-lg mx-auto">
+          Caso deseje nos presentear, optamos por uma lista virtual. 
+          O valor será transferido diretamente via PIX, sem taxas de intermediários.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {gifts.map((gift) => (
+          <button 
+            key={gift.id}
+            onClick={() => handleGiftClick(gift)}
+            className="group bg-white p-6 text-left border border-transparent hover:border-[#EBE5CE] hover:shadow-lg transition-all duration-300 flex items-center gap-4"
+          >
+            <span className="text-4xl grayscale group-hover:grayscale-0 transition-all">{gift.icon}</span>
+            <div>
+              <h3 className="font-serif text-xl text-[#5D4037]">{gift.title}</h3>
+              <p className="text-[#A67B5B] font-sans mt-1">R$ {gift.price.toFixed(2).replace('.', ',')}</p>
+            </div>
+            <div className="ml-auto text-[#EBE5CE] group-hover:text-[#A67B5B]">
+              <Gift size={24} />
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* Modal */}
+      {selectedGift && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#5D4037]/40 backdrop-blur-sm">
+          <div className="bg-[#F5F1E6] w-full max-w-md p-8 relative shadow-2xl border border-[#EBE5CE]">
+            <button 
+              onClick={() => setSelectedGift(null)}
+              className="absolute top-4 right-4 text-[#8C7C71] hover:text-[#5D4037]"
+            >
+              <X size={24} />
+            </button>
+
+            <div className="text-center">
+              <span className="text-6xl mb-4 block">{selectedGift.icon}</span>
+              <h3 className="font-serif text-2xl text-[#5D4037] mb-2">{selectedGift.title}</h3>
+              <p className="text-lg text-[#A67B5B] mb-6">R$ {selectedGift.price.toFixed(2).replace('.', ',')}</p>
+              
+              <div className="bg-white p-4 mb-6 border border-dashed border-[#8C7C71]">
+                 <div className="w-full aspect-square bg-[#EBE5CE] flex items-center justify-center text-[#8C7C71] text-sm mb-4">
+                   {/* QR Code Placeholder based on PDF recommendation to use a library */}
+                   [QR Code Visualizado Aqui]
+                 </div>
+                 <p className="text-xs text-[#8C7C71] mb-2">PIX Copia e Cola:</p>
+                 <div className="bg-[#F5F1E6] p-2 text-[10px] break-all text-[#8C7C71] font-mono mb-2">
+                   {selectedGift.payload.substring(0, 40)}...
+                 </div>
+              </div>
+
+              <button 
+                onClick={copyToClipboard}
+                className={`w-full py-3 flex items-center justify-center gap-2 font-sans uppercase tracking-widest text-sm transition-colors ${
+                  copied ? 'bg-[#5D4037] text-white' : 'bg-[#A67B5B] text-white hover:bg-[#8f684b]'
+                }`}
+              >
+                {copied ? <><Check size={18} /> Copiado</> : <><Copy size={18} /> Copiar Código Pix</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+};
+
+const Location = () => (
+  <section className="w-full mb-24 animate-fade-in">
+     <div className="text-center mb-8 px-6">
+        <h2 className="font-serif text-4xl text-[#5D4037] mb-4">O Local</h2>
+        <p className="text-[#8C7C71]">Spazio Giardino • Londrina, PR</p>
+     </div>
+     
+     {/* Filter applied as per PDF 5.5 to desaturate map */}
+     <div className="w-full h-[400px] bg-[#EBE5CE] relative grayscale sepia-[.20] contrast-[.9]">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3663.0!2d-51.1!3d-23.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDE4JzAwLjAiUyA1McKwMDYnMDAuMCJX!5e0!3m2!1sen!2sbr!4v1620000000000!5m2!1sen!2sbr"
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          allowFullScreen=""
+          loading="lazy"
+          title="Wedding Location"
+        ></iframe>
+     </div>
+  </section>
+);
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('home');
+
+  // Inject Fonts dynamically
+  useEffect(() => {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }, []);
+
+  const renderContent = () => {
+    switch(activeTab) {
+      case 'home': return <Hero />;
+      case 'rsvp': return <RSVP />;
+      case 'gifts': return <GiftRegistry />;
+      case 'location': return <Location />;
+      default: return <Hero />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#F5F1E6] font-sans selection:bg-[#A67B5B] selection:text-white overflow-x-hidden">
+      <GrainyOverlay />
+      
+      <main className="relative z-10 pb-20 md:pb-0 md:pt-20">
+        {renderContent()}
+      </main>
+
+      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+    </div>
+  );
+}
