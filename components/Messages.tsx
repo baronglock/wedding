@@ -51,7 +51,23 @@ export default function Messages() {
     setLoading(true)
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          website_url: formData[HONEYPOT_FIELD_NAME]
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro na requisição')
+      }
+
       setSubmitted(true)
     } catch (err) {
       setError('Erro ao enviar mensagem. Tente novamente.')

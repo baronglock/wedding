@@ -48,7 +48,24 @@ export default function RSVP() {
     setLoading(true)
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const response = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          attending: formData.attending,
+          message: formData.message,
+          website_url: formData[HONEYPOT_FIELD_NAME]
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro na requisição')
+      }
+
       console.log('RSVP Confirmado:', {
         name: formData.name,
         email: formData.email,
