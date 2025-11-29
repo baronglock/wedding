@@ -41,7 +41,7 @@ export default function Location() {
             <div className="relative h-80 w-full bg-black/30 p-4">
               {showMap.church ? (
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3602.8!2d-49.2717!3d-25.4297!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94dce46d6b8c0a0d%3A0x0!2zSWdyZWphIE9ydG9kb3hhIEFudGlvcXVpbmEgU8OjbyBKb3JnZQ!5e0!3m2!1spt-BR!2sbr"
+                  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=Igreja+Ortodoxa+Antioquina+São+Jorge,Rua+Brigadeiro+Franco+375,Mercês,Curitiba,PR&zoom=16"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -121,7 +121,7 @@ export default function Location() {
             <div className="relative h-80 w-full bg-black/30 p-4">
               {showMap.party ? (
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3602.5!2d-49.3354!3d-25.3935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94dce39f26f847f1%3A0x0!2zU3BhemlvIEdpYXJkaW5v!5e0!3m2!1spt-BR!2sbr"
+                  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=R.+Soledade+Regina+Sanzovo+Mourão+600,Lamenha+Pequena,Curitiba,PR,82415-040&zoom=16"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}

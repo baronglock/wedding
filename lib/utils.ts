@@ -81,11 +81,11 @@ export const WEDDING_INFO = {
   church: {
     name: "Igreja Ortodoxa Antioquina São Jorge",
     address: "Rua Brigadeiro Franco, 375",
-    neighborhood: "Centro",
+    neighborhood: "Mercês",
     city: "Curitiba",
     state: "PR",
     time: "14:30",
-    mapsUrl: "https://maps.google.com/?q=Igreja+Ortodoxa+Antioquina+São+Jorge+Brigadeiro+Franco+375+Curitiba",
+    mapsUrl: "https://maps.google.com/?q=Igreja+Ortodoxa+Antioquina+São+Jorge+Rua+Brigadeiro+Franco+375+Mercês+Curitiba+PR",
     photo: "/church-photo.jpg"
   },
 
@@ -93,11 +93,11 @@ export const WEDDING_INFO = {
   party: {
     name: "Spazio Giardino",
     address: "R. Soledade Regina Sanzovo Mourão, 600",
-    neighborhood: "Santa Felicidade",
+    neighborhood: "Lamenha Pequena",
     city: "Curitiba",
     state: "PR",
     time: "16:30",
-    mapsUrl: "https://maps.google.com/?q=Spazio+Giardino+Soledade+Regina+Sanzovo+Mourão+600+Curitiba",
+    mapsUrl: "https://maps.google.com/?q=R.+Soledade+Regina+Sanzovo+Mourão+600+Lamenha+Pequena+Curitiba+PR+82415-040",
     photo: "/party-photo.jpg"
   },
 
