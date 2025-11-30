@@ -54,10 +54,12 @@
   /* Botões Profissionais */
   .btn-primary {
     @apply inline-flex items-center justify-center px-8 py-4;
-    @apply bg-wedding-burgundy text-wedding-cream;
+    @apply bg-wedding-gold text-wedding-burgundy;
     @apply font-medium tracking-wide uppercase text-sm;
     @apply transition-all duration-300;
-    @apply hover:bg-wedding-burgundy-light hover:shadow-xl;
+    @apply border-2 border-wedding-gold;
+    @apply hover:bg-wedding-cream hover:border-wedding-cream hover:shadow-xl;
+    @apply shadow-lg;
     letter-spacing: 0.1em;
   }
 
